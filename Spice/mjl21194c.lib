@@ -1,0 +1,13 @@
+* MJL21194C - created November 22, 2010 copyright Cordell Audio
+.MODEL mjl21194c npn
++ IS=4e-12 BF=65 VAF=500
++ IKF=14 ISE=1.2e-9 NE=2.0 NF=1.01
++ RB=3.4 RBM=0.1 IRB=1.0 RC=0.06
++ CJE=8e-9 MJE=0.35 VJE=0.5 RE=0.01
++ CJC=1e-9 MJC=0.5 VJC=0.6 FC=0.5
++ TF=21e-9 XTF=90 VTF=10 ITF=100
++ TR=100e-9 BR=5 VAR=100 NR=1.1
++ EG=1.1 XCJC=0.96 XTB=0.1 XTI=1.0
++ NC=4 ISC=0.3e-12 mfg=OnSemi060708
+*
+*

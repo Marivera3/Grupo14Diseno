@@ -1,0 +1,36 @@
+Circuit: * C:\users\agustincampenyscolari\Desktop\Diseño\Spice\Draft1.asc
+
+V2: both pins shorted together -- ignoring.
+Direct Newton iteration for .op point succeeded.
+Semiconductor Device Operating Points:
+                        --- VDMOSFET Transistors ---
+Name:          m3          m2          m1
+Model:       ao6407     si7336adp   si7336adp
+Id:           4.96e+1     1.06e-9     4.96e+1
+Vgs:          0.00e+0     1.48e+0     3.52e+0
+Vds:          1.48e+0     1.48e+0     3.52e+0
+Vth:         -8.00e-1     2.90e+0     2.90e+0
+Gm:           1.90e+1      NaN        1.69e+2
+Gds:          0.00e+0      NaN        4.80e-1
+Cgs:           NaN        5.20e-9     5.20e-9
+Cgd:           NaN        1.06e-9     1.10e-9
+Cbody:         NaN        1.91e-9     1.41e-9
+
+
+
+Date: Wed Apr 22 00:37:49 2020
+Total elapsed time: 0.127 seconds.
+
+tnom = 27
+temp = 27
+method = trap
+totiter = 12
+traniter = 0
+tranpoints = 0
+accept = 0
+rejected = 0
+matrix size = 15
+fillins = 0
+solver = Normal
+Matrix Compiler1: 1.00 KB object code size
+Matrix Compiler2: 1.22 KB object code size
