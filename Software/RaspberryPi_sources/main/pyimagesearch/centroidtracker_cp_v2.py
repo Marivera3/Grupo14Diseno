@@ -96,7 +96,9 @@ class CentroidTracker:
 
 				if nombres[col] == self.names[objectID] and not self.block_name[objectID]:
 					self.name_counter[objectID] += 1
-					self.block_name[objectID]  = True if self.name_counter[objectID] == 2 else False
+					self.block_name[objectID]  = True if self.name_counter[objectID] == 8 else False
+				elif self.block_name[objectID]:
+					self.name_counter[objectID] = 0
 				else:
 					self.name_counter[objectID]  = 0
 					self.names[objectID] = nombres[col]
