@@ -4,7 +4,7 @@
 ###############################################################################
 
 '''
-python3 cifras_desempeño.py --dataset dataset --detector face_detection_model \
+python3 cifras_desempeño_rapido.py --dataset dataset2 --detector face_detection_model \
 --embeddings output/embeddings_v2.pickle \
 --embedding-model dlib_face_recognition_resnet_model_v1.dat \
 --confidence_dec 0.5 --confidence_rec 0.5 \
@@ -25,11 +25,11 @@ import numpy as np
 import imutils
 from imutils import paths
 from imutils.face_utils import FaceAligner
-import matplotlib.pyplot as plt
 from functions_v4 import get_faces, recognize, train
 from FrameProcessing import FrameProcessing
 from imutils.video import FPS
 from sklearn.metrics import classification_report, plot_confusion_matrix
+import matplotlib.pyplot as plt
 # PARAMETERS
 
 # construct the argument parser and parse the arguments
@@ -88,11 +88,14 @@ fps_count = FPS().start()
 x_test = []
 y_test = []
 y_train = []
+y_test2 = []
 nombres = set(data["names"])
 nombres.add('unknown')
-
+skip_frames = 3
+c = skip_frames
 for name in imagePaths:
 	if name == 'emilia_clarke':
+		#stream = cv2.VideoCapture("videos_eff/{}.avi".format(name))
 		stream = cv2.VideoCapture("videos_eff/{}.m4v".format(name))
 	else:
 		stream = cv2.VideoCapture("videos_eff/{}.avi".format(name))
@@ -106,6 +109,9 @@ for name in imagePaths:
 	print('Persona a evaluar : {}'.format(name))
 	while True:
 		(grabbed, frame) = stream.read()
+		if c != skip_frames:
+			c += 1
+			continue
 
 		# if the frame was not grabbed, then we have reached the
 		# end of the stream
@@ -120,37 +126,109 @@ for name in imagePaths:
 		face_data = [(*face, *recognize(face[1], model, le, confianza_recon)) for face in detections]
 		#[(face,vector,coordenada,imagen_completa, nombre, prob)]
 		for item in face_data:
-			x_test.append(item[1])
-			y_test.append(item[4])
+			y_test2.append(item[4])
 			y_train.append(name)
 			prob.append(item[5])
 			if item[4] == name:
 				Coincidencias += 1
+				x_test.append(item[1])
+				y_test.append(item[4])
 			elif item[4] != 'unknown':
 				Falsas_coincidencias += 1
+				x_test.append(item[1])
+				y_test.append(item[4])
 			Caras += 1
 		fps_count.update()
+		c = 0
 	calculos[name] = (Coincidencias,Caras,Falsas_coincidencias, np.mean(prob))
 
 print(calculos)
 
 fps_count.stop()
 
-print(classification_report(y_test, y_train,
-                            target_names = nombres))
+y_test1 = le.transform(y_test)
+for x in le.classes_:
+	if x not in x_test:
+		y_test2.append('unknown')
+		y_train.append(x)
 
-disp = plot_confusion_matrix(model, x_test, y_test,
-                             display_labels = nombres,
-                             cmap=plt.cm.Blues,
-                             normalize='true')
 
-disp.ax_.set_title("Normalized confusion matrix")
-disp.ax_.set_xticklabels(disp.ax_.get_xticklabels(), rotation=45,
+print(classification_report(y_test2, y_train,
+							target_names = nombres))
+
+
+
+nombres_reales = y_test2
+
+nombres_teoricos = y_train
+
+nombres = set(data['names'])
+nombres.add('unknown')
+
+contador_teorico = {x:0 for x in nombres}
+
+for i in nombres:
+	contador_teorico[i] = list(nombres_teoricos).count(i)
+
+contador = {x:0 for x in nombres}
+contador_malo = {x:{y:0 for y in nombres} for x in nombres}
+
+for name_exp,name_teo in zip(nombres_reales,nombres_teoricos):
+	if name_exp == name_teo:
+		contador[name_teo] += 1
+	else:
+		contador_malo[name_teo][name_exp] += 1
+norm_conf = []
+for i in nombres:
+	sum = 0
+	for j in nombres:
+		sum += contador_malo[i][j]
+	sum += contador[i]
+	if sum == 0 :
+		norm_conf.append(0)
+	else:
+		norm_conf.append(float(contador[i])/float(sum))
+conf = []
+for i in nombres:
+	tem_conf = []
+	for j in nombres:
+
+		if i==j:
+			tem_conf.append(contador[i])
+		else:
+			tem_conf.append(contador_malo[i][j])
+	conf.append(tem_conf)
+fig = plt.figure()
+plt.clf()
+ax = fig.add_subplot(111)
+ax.set_aspect(1)
+res = ax.imshow(np.array(conf), cmap=plt.cm.jet,
+				interpolation='nearest')
+width = len(nombres)
+height = len(nombres)
+for k,x in enumerate(nombres):
+	ax.annotate(str(contador[x]), xy=(k, k),
+				horizontalalignment='center',
+				verticalalignment='center')
+for k,x in enumerate(nombres):
+	for kk,y in enumerate(nombres):
+		if k==kk:
+			continue
+		ax.annotate(str(contador_malo[x][y]), xy=(kk, k),
+					horizontalalignment='center',
+					verticalalignment='center')
+cb = fig.colorbar(res)
+clases = nombres
+plt.xticks(range(width), clases,rotation=45,
 horizontalalignment='right',fontsize='x-small')
-print("Normalized confusion matrix")
-print(disp.confusion_matrix)
-
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+plt.title('Confusion Matrix')
+plt.yticks(range(height), clases)
+plt.savefig('confusion_matrix.png', format='png')
 plt.show()
+
+
 
 print("[INFO] elasped time fps processed: {:.2f}".format(fps_count.elapsed()))
 print("[INFO] approx. processed FPS: {:.2f}".format(fps_count.fps()))
