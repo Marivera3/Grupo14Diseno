@@ -4,3 +4,5 @@ En este repositorio se muestran las rutinas implementadas para la Raspberry y ES
 Además, se agrega un archivo comprimido "grupo14disenos.zip" que contiene la simulación del circuito, la placa realizada (Layout), las representaciones 3D de las cajas a utilizar, source del software.
 
 Link a archivo comprimido con archivos de diseño: https://drive.google.com/file/d/1_rqe6CxWaPa32fpDPIvRqcrTsPpg1_B3/view?usp=sharing
+
+Link a imagen de tarjeta SD para Raspberry Pi 3B+: https://drive.google.com/file/d/1i9vpLNz8A-gCcttesEl2Yn4r0JcTFwYh/view?usp=sharing
